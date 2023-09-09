@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+        context: .
+        target: prod
+    image: swoole-runtime-example:latest
+    container_name: app
+    environment:
+      - SWOOLE_WORKER_NUM=4
+    ports:
+      - "8080:80"
