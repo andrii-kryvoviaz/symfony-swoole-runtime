@@ -1,3 +1,5 @@
+ARG PHP_VERSION=8.3.3
+
 FROM composer:2 as vendor
 # Copy composer files
 COPY composer.json composer.lock ./
@@ -6,7 +8,7 @@ COPY composer.json composer.lock ./
 RUN composer install --ignore-platform-reqs --no-interaction --no-scripts --prefer-dist
 
 
-FROM php:8.2-alpine as base
+FROM php:${PHP_VERSION}-alpine as base
 # Install dependencies
 RUN apk update && apk upgrade &&\
     apk add --no-cache \
@@ -24,8 +26,8 @@ RUN apk update && apk upgrade &&\
 RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS autoconf g++ make linux-headers imagemagick-dev curl-dev postgresql-dev icu-dev libpng-dev libmcrypt-dev libjpeg-turbo-dev oniguruma-dev && \
     docker-php-ext-configure gd && \
     docker-php-ext-install curl intl mysqli pdo_pgsql mbstring gd && \
-    pecl install mcrypt redis imagick && \
-    docker-php-ext-enable mcrypt redis imagick && \
+    pecl install mcrypt redis && \
+    docker-php-ext-enable mcrypt redis && \
     apk del .build-deps
 
 # Copy supervisor config
